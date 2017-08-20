@@ -14,8 +14,13 @@ router.post('/', function (req, res, next) {
             const data = { name: { en: name }, email, roles, password };
             createUser(data, function (err, user) {
                 if (err) {
-                    console.log(err);
-                    res.status(500).send(err);
+                    if (err.message === "Email Already Exists") {
+                        res.status(409).send(err.message);
+                    }
+                    else {
+                        console.log(err);
+                        res.status(500).send(err);
+                    }
                 }
                 else {
                     res.status(201).send(user);

@@ -17,6 +17,18 @@ const jwtUtilClientSession = new JWTUtil(clientSessionConfig);
 export function createUser(data, callback) {
     async.waterfall([
         function (waterfallCallback) {
+            getUserByEmailDAO(data.email, waterfallCallback);
+        },
+        function (user, waterfallCallback) {
+            if (user) {
+                var err = new Error("Email Already Exists");
+                waterfallCallback(err);
+            }
+            else {
+                waterfallCallback();
+            }
+        },
+        function (waterfallCallback) {
             generatePasswordHash(data.password, function (err, hash) {
                 if (err) {
                     waterfallCallback(err);
