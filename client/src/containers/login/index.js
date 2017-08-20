@@ -29,15 +29,13 @@ class Login extends Component {
         )
     }
     onSubmit(values, dispatch) {
-        return dispatch(loginUser(values));
+        return dispatch(loginUser(values)).then(function (data) {
+            dispatch(push("/inventory/add"));
+        });
     }
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;
-        const { dispatch } = this.props;
         const { token, user, isLoggingIn, loggingInError } = this.props.auth;
-        if (token) {
-            dispatch(push("/inventory/add"));
-        }
         let error = null;
         if (loggingInError) {
             error = (
@@ -48,10 +46,10 @@ class Login extends Component {
             )
         }
         return (
-            <Segment textAlign='center' loading={isLoggingIn}>
+            <Segment textAlign='center'>
                 <Header as="h2">Login</Header>
                 {error}
-                <Form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
+                <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isLoggingIn}>
                     <Form.Field inline>
                         <Field name="email" placeholder="Enter the Email" component={this.renderField}></Field>
                     </Form.Field>
