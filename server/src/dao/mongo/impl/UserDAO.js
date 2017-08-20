@@ -14,6 +14,12 @@ export function getUserById(id, callback) {
     });
 }
 
+export function getUserByEmail(email, callback) {
+    User.findOne({ "email": email }, function (err, user) {
+        callback(err, user)
+    });
+}
+
 export function updateUserById(id, data, callback) {
     data.lastModifiedAt = new Date();
     User.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, user) {

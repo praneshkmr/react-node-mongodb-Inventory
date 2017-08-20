@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUser, getUserById } from "./../services/UserService";
+import { createUser, getUserById, loginUser } from "./../services/UserService";
 
 const router = Router();
 
@@ -12,6 +12,24 @@ router.post('/', function (req, res, next) {
         }
         else {
             res.status(201).send(user);
+        }
+    });
+});
+
+router.post('/login', function (req, res, next) {
+    const data = req.body;
+    loginUser(data, function (err, user, token) {
+        if (err) {
+            if (err.message === "Invalid Email or Password") {
+                res.status(400).send(err.message);
+            }
+            else {
+                console.log(err);
+                res.status(500).send(err);
+            }
+        }
+        else {
+            res.status(200).send({ token: token, user: user });
         }
     });
 });

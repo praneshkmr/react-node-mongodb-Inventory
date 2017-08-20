@@ -5,5 +5,10 @@
         "database": "inventorySystem_PinkBlue",
         "username": "",
         "password": ""
+    },
+    "authenticate": {
+        "clientSession": {
+            "secretKey": "Inventory@123"
+        }
     }
 }
