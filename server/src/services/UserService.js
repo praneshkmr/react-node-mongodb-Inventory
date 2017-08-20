@@ -1,10 +1,23 @@
 import async from "async";
 
 import { getNextUserId } from "./CounterService";
-import UserDAO from "./../dao/mongo/impl/UserDAO";
+import { createUser as createUserDAO, getUserById as getUserByIdDAO } from "./../dao/mongo/impl/UserDAO";
+import { generatePasswordHash } from "./../utils/PasswordUtil";
 
 export function createUser(data, callback) {
     async.waterfall([
+        function (waterfallCallback) {
+            generatePasswordHash(data.password, function (err, hash) {
+                if (err) {
+                    waterfallCallback(err);
+                }
+                else {
+                    data.passwordHash = hash;
+                    delete data.password;
+                    waterfallCallback();
+                }
+            })
+        },
         function (waterfallCallback) {
             getNextUserId(function (err, counterDoc) {
                 waterfallCallback(err, data, counterDoc);
@@ -12,12 +25,11 @@ export function createUser(data, callback) {
         },
         function (data, counterDoc, waterfallCallback) {
             data.id = counterDoc.counter;
-            data.source = "client";
-            UserDAO.createUser(data, waterfallCallback);
+            createUserDAO(data, waterfallCallback);
         }
     ], callback);
 }
 
 export function getUserById(id, callback) {
-    UserDAO.getUserById(id, callback);
+    getUserByIdDAO(id, callback);
 }
