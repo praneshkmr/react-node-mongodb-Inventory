@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import createHistory from 'history/createBrowserHistory';
 import { Route } from 'react-router';
 import { createLogger } from "redux-logger";
+import thunk from "redux-thunk";
 
 import { ConnectedRouter, routerMiddleware, push } from 'react-router-redux';
 
@@ -20,7 +21,7 @@ const middleware = routerMiddleware(history)
 
 const store = createStore(
     reducers,
-    applyMiddleware(middleware, logger)
+    applyMiddleware(middleware, logger, thunk)
 )
 
 store.dispatch(push('/login'))

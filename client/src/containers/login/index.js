@@ -1,7 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { reduxForm, Field } from "redux-form";
-import { Header, Segment, Input, Label, Form, Button } from "semantic-ui-react";
+import { Header, Segment, Input, Label, Form, Button, Message } from "semantic-ui-react";
+import { push } from 'react-router-redux';
+
+import { loginUser } from "./../../actions/AuthActions";
 
 function validate(values) {
     var errors = {};
@@ -26,13 +29,28 @@ class Login extends Component {
         )
     }
     onSubmit(values, dispatch) {
-        console.log(values);
+        return dispatch(loginUser(values));
     }
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;
+        const { dispatch } = this.props;
+        const { token, user, isLoggingIn, loggingInError } = this.props.auth;
+        if (token) {
+            dispatch(push("/inventory/add"));
+        }
+        let error = null;
+        if (loggingInError) {
+            error = (
+                <Message negative>
+                    <Message.Header>Error while Login</Message.Header>
+                    <p>{loggingInError}</p>
+                </Message>
+            )
+        }
         return (
-            <Segment textAlign='center'>
+            <Segment textAlign='center' loading={isLoggingIn}>
                 <Header as="h2">Login</Header>
+                {error}
                 <Form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
                     <Form.Field inline>
                         <Field name="email" placeholder="Enter the Email" component={this.renderField}></Field>
@@ -48,7 +66,9 @@ class Login extends Component {
 }
 
 function mapStatesToProps(state) {
-    return state;
+    return {
+        auth: state.auth
+    }
 }
 
 export default reduxForm({
