@@ -38,7 +38,7 @@ class Login extends Component {
                         <Field name="email" placeholder="Enter the Email" component={this.renderField}></Field>
                     </Form.Field>
                     <Form.Field inline>
-                        <Field name="password" placeholder="Enter the Password" component={this.renderField}></Field>
+                        <Field name="password" type="password" placeholder="Enter the Password" component={this.renderField}></Field>
                     </Form.Field>
                     <Button loading={submitting} disabled={submitting}>Login</Button>
                 </Form>

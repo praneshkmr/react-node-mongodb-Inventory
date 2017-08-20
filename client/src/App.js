@@ -1,15 +1,14 @@
 import React, { Component } from "react";
 import { render } from "react-dom";
-import { createStore, combineReducers, applyMiddleware } from 'redux'
-import { Provider } from 'react-redux'
-import createHistory from 'history/createBrowserHistory'
+import { createStore, applyMiddleware } from 'redux';
+import { Provider } from 'react-redux';
+import createHistory from 'history/createBrowserHistory';
 import { Route } from 'react-router';
 import { createLogger } from "redux-logger";
-import { reducer as formReducer } from "redux-form";
 
-import { ConnectedRouter, routerReducer, routerMiddleware, push } from 'react-router-redux'
+import { ConnectedRouter, routerMiddleware, push } from 'react-router-redux';
 
-// import reducers from './reducers';
+import reducers from './reducers';
 
 import Login from "./containers/login";
 import AddInventory from "./containers/addInventory";
@@ -20,11 +19,7 @@ const logger = createLogger();
 const middleware = routerMiddleware(history)
 
 const store = createStore(
-    combineReducers({
-        // ...reducers,
-        router: routerReducer,
-        form: formReducer
-    }),
+    reducers,
     applyMiddleware(middleware, logger)
 )
 
