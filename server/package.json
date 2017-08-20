@@ -17,7 +17,8 @@
     "jsonwebtoken": "^7.4.3",
     "mongoose": "^4.11.7",
     "morgan": "~1.8.1",
-    "serve-favicon": "~2.4.2"
+    "serve-favicon": "~2.4.2",
+    "validator": "^8.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
