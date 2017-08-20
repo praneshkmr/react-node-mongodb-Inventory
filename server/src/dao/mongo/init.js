@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import config from "config";
-import { createMongoUri } from "./../utils/URIUtil";
+import { createMongoUri } from "./../../utils/URIUtil";
 
 mongoose.Promise = global.Promise;
 const mongoConfig = config.get('mongo');
