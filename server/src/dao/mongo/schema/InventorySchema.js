@@ -4,7 +4,7 @@ const InventorySchema = mongoose.Schema({
     id: { type: Number, required: true },
 
     productId: { type: Number, required: true },
-    name: {
+    productName: {
         en: { type: String, required: true },
     },
     mrp: { type: Number, required: true },

@@ -29,8 +29,10 @@ app.use(function (req, res, next) {
 
 import init from "./src/dao/mongo/init";
 import users from "./src/routes/UserRoute";
+import inventories from "./src/routes/InventoryRoute";
 
 app.use('/users', users);
+app.use('/inventories', inventories);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
