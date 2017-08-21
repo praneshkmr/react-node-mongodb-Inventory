@@ -15,7 +15,7 @@ export function getInventoryById(id, callback) {
 }
 
 export function getInventories(callback) {
-    Inventory.find({}, function (err, inventories) {
+    Inventory.find({ "isRemoved": false }, function (err, inventories) {
         callback(err, inventories)
     });
 }

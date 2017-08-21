@@ -8,7 +8,11 @@ export const GET_INVENTORIES_STARTED = "GET_INVENTORIES_STARTED";
 export const GET_INVENTORIES_FULFILLED = "GET_INVENTORIES_FULFILLED";
 export const GET_INVENTORIES_REJECTED = "GET_INVENTORIES_REJECTED";
 
-const WS_URL = "http://localhost:3000/inventories";
+export const DELETE_INVENTORY_STARTED = "DELETE_INVENTORY_STARTED";
+export const DELETE_INVENTORY_FULFILLED = "DELETE_INVENTORY_FULFILLED";
+export const DELETE_INVENTORY_REJECTED = "DELETE_INVENTORY_REJECTED";
+
+const WS_URL = "http://localhost:3000/inventories/";
 
 export function addInventory(data) {
     return function (dispatch) {
@@ -43,6 +47,26 @@ export function getInventories(data) {
             .catch(function (error) {
                 const response = error.response;
                 dispatch({ type: GET_INVENTORIES_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
+export function deleteInventory(data) {
+    const inventory = data.inventory;
+    return function (dispatch) {
+        dispatch({ type: DELETE_INVENTORY_STARTED });
+        return axios.delete(WS_URL + inventory.id, { headers: { Authorization: data.token } })
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: DELETE_INVENTORY_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: DELETE_INVENTORY_REJECTED, payload: response });
                 throw response;
             })
     }

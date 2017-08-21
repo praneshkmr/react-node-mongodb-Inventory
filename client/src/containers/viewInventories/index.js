@@ -5,21 +5,28 @@ import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
-import { getInventories } from "./../../actions/InventoryActions";
+import { getInventories, deleteInventory } from "./../../actions/InventoryActions";
 
 class AddInventory extends Component {
     componentWillMount() {
         const { token, dispatch } = this.props;
         dispatch(getInventories({ token: token }));
     }
+    onPressDelete(inventory) {
+        const { token, dispatch } = this.props;
+        dispatch(deleteInventory({ token: token, inventory: inventory })).then(function (data) {
+            dispatch(getInventories({ token: token }));
+        });
+    }
     render() {
-        const { inventories, isFetchingInventories, fetchingInventoriesError } = this.props.inventory;
+        const { inventories, isFetchingInventories, fetchingInventoriesError, deletingsInventoriesError } = this.props.inventory;
         let error = null;
-        if (fetchingInventoriesError) {
+        if (fetchingInventoriesError || deletingsInventoriesError) {
             error = (
                 <Message negative>
                     <Message.Header>Error while Fetching Inventory</Message.Header>
                     <p>{fetchingInventoriesError}</p>
+                    <p>{deletingsInventoriesError}</p>
                 </Message>
             )
         }
@@ -33,13 +40,14 @@ class AddInventory extends Component {
                     <Table.Cell >{inventory.quantity}</Table.Cell>
                     <Table.Cell >{inventory.batch.number}</Table.Cell>
                     <Table.Cell >{inventory.batch.date}</Table.Cell>
+                    <Table.Cell ><Icon name='trash outline' size='large' onClick={this.onPressDelete.bind(this, inventory)} /></Table.Cell>
                 </Table.Row>
             )
-        });
+        }, this);
         let tableView = <h4>No Inventories Found. Please Add Some </h4>
         if (inventories.length > 0) {
             tableView = (
-                <Table celled>
+                <Table celled fixed>
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell>Product ID</Table.HeaderCell>
@@ -49,6 +57,7 @@ class AddInventory extends Component {
                             <Table.HeaderCell>Quantity</Table.HeaderCell>
                             <Table.HeaderCell>Batch Number</Table.HeaderCell>
                             <Table.HeaderCell>Batch Date</Table.HeaderCell>
+                            <Table.HeaderCell>Options</Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -62,9 +71,9 @@ class AddInventory extends Component {
                 <Segment textAlign='center' >
                     <Header as="h2">Inventory List</Header>
                     {error}
-                    <Segment loading={isFetchingInventories}>
-                        {tableView}
-                    </Segment>
+                    {/* <Segment loading={isFetchingInventories}> */}
+                    {tableView}
+                    {/* </Segment> */}
                 </Segment>
             </BaseLayout>
         )

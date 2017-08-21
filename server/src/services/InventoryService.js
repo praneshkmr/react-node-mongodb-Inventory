@@ -182,7 +182,7 @@ export function removeInventory(data, callback) {
             else if (isDepartmentManager) {
                 const update = {
                     status: "pending",
-                    isRemoved: true,
+                    isRemoved: false,
                     $push: {
                         history: {
                             action: "removed",

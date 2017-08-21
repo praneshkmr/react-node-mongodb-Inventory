@@ -1,12 +1,15 @@
 import { ADD_INVENTORY_STARTED, ADD_INVENTORY_FULFILLED, ADD_INVENTORY_REJECTED } from "./../actions/InventoryActions";
 import { GET_INVENTORIES_STARTED, GET_INVENTORIES_FULFILLED, GET_INVENTORIES_REJECTED } from "./../actions/InventoryActions";
+import { DELETE_INVENTORY_STARTED, DELETE_INVENTORY_FULFILLED, DELETE_INVENTORY_REJECTED } from "./../actions/InventoryActions";
 
 const initialState = {
     inventories: [],
     isAddingInventory: false,
     addingInventoryError: null,
     isFetchingInventories: false,
-    fetchingInventoriesError: null
+    fetchingInventoriesError: null,
+    isDeletingInventory: false,
+    deletingsInventoriesError: null
 }
 
 export default function (state = initialState, action) {
@@ -33,6 +36,17 @@ export default function (state = initialState, action) {
         case GET_INVENTORIES_REJECTED: {
             const error = action.payload.data;
             return { ...state, isFetchingInventories: false, fetchingInventoriesError: error };
+        }
+        case DELETE_INVENTORY_STARTED: {
+            return { ...state, isDeletingInventory: true };
+        }
+        case DELETE_INVENTORY_FULFILLED: {
+            const data = action.payload;
+            return { ...state, isDeletingInventory: false };
+        }
+        case DELETE_INVENTORY_REJECTED: {
+            const error = action.payload.data;
+            return { ...state, isDeletingInventory: false, deletingsInventoriesError: error };
         }
         default: {
             return state;
