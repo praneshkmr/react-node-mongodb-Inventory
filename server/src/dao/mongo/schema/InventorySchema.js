@@ -14,6 +14,13 @@ const InventorySchema = mongoose.Schema({
     },
     quantity: { type: Number, required: true },
     status: { type: String, required: true, enum: ["approved", "pending"] },
+    history: [{
+        _id: false,
+        action: { type: String, required: true, enum: ["created", "updated", "approved", "removed"] },
+        userId: { type: Number, required: true },
+        timestamp: { type: Date, default: new Date }
+    }],
+    isRemoved: { type: Boolean, required: true, default: false },
 
     createdAt: { type: Date, default: new Date },
     lastModifiedAt: { type: Date, default: new Date },

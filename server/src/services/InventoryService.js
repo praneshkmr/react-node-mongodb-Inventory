@@ -31,6 +31,10 @@ export function createInventory(data, callback) {
         },
         function (data, counterDoc, waterfallCallback) {
             data.id = counterDoc.counter;
+            data.history = [{
+                action: "created",
+                userId: data.userSession.userId
+            }]
             createInventoryDAO(data, waterfallCallback);
         }
     ], callback);
