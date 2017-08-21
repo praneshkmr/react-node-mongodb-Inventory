@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import { render } from "react-dom";
-import { createStore, applyMiddleware } from 'redux';
+import { compose, createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import createHistory from 'history/createHashHistory';
 import { Route } from 'react-router';
 import { createLogger } from "redux-logger";
 import thunk from "redux-thunk";
+import { persistStore, autoRehydrate } from 'redux-persist'
 
 import { ConnectedRouter, routerMiddleware, push } from 'react-router-redux';
 
@@ -22,21 +23,49 @@ const middleware = routerMiddleware(history)
 
 const store = createStore(
     reducers,
-    applyMiddleware(middleware, logger, thunk)
+    undefined,
+    compose(
+        applyMiddleware(middleware, logger, thunk),
+        autoRehydrate()
+    )
 )
 
-store.dispatch(push('/login'))
+
+
+class App extends Component {
+    state = {
+        isLoading: true
+    }
+    componentWillMount() {
+        persistStore(store, { whitelist: ['auth'] }, () => {
+            this.setState({ isLoading: false });
+            store.dispatch(push('/login'))
+        })
+    }
+    render() {
+        if (this.state.isLoading) {
+            return (
+                <div>Loading...</div>
+            );
+        }
+        else {
+            return (
+                <Provider store={store}>
+                    <ConnectedRouter history={history}>
+                        <div>
+                            {/* <Route exact path="/" component={AddInventory} /> */}
+                            <Route exact path="/login" component={Login} />
+                            <Route exact path="/inventory/add" component={AddInventory} />
+                            <Route exact path="/inventory" component={ViewInventories} />
+                        </div>
+                    </ConnectedRouter>
+                </Provider>
+            );
+        }
+    }
+}
 
 render(
-    <Provider store={store}>
-        <ConnectedRouter history={history}>
-            <div>
-                {/* <Route exact path="/" component={AddInventory} /> */}
-                <Route exact path="/login" component={Login} />
-                <Route exact path="/inventory/add" component={AddInventory} />
-                <Route exact path="/inventory" component={ViewInventories} />
-            </div>
-        </ConnectedRouter>
-    </Provider>,
-    document.getElementById('app')
+    <App />
+    , document.getElementById('app')
 )

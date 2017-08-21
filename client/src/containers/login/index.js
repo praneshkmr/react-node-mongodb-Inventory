@@ -19,6 +19,13 @@ function validate(values) {
 }
 
 class Login extends Component {
+    componentWillMount() {
+        const { token } = this.props.auth;
+        const { dispatch } = this.props;
+        if (token) {
+            dispatch(push("/inventory"));
+        }
+    }
     renderField({ input, meta: { touched, error }, ...custom }) {
         const hasError = touched && error !== undefined;
         return (

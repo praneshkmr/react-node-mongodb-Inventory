@@ -9,6 +9,9 @@ const initialState = {
 
 export default function (state = initialState, action) {
     switch (action.type) {
+        case "persist/REHYDRATE": {
+            return action.payload.auth;
+        }
         case USER_LOGIN_STARTED: {
             return { ...state, isLoggingIn: true };
         }
