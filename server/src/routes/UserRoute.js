@@ -38,7 +38,7 @@ router.post('/login', function (req, res, next) {
         else {
             const { email, password } = req.body;
             const data = { email, password };
-            loginUser(data, function (err, user, token) {
+            loginUser(data, function (err, token, user) {
                 if (err) {
                     if (err.message === "Invalid Email or Password") {
                         res.status(400).send(err.message);

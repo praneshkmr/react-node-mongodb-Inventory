@@ -45,17 +45,20 @@ class AddInventory extends Component {
         )
     }
     onSubmit(values, dispatch) {
+        const { token } = this.props.auth;
+        values.token = token;
+        console.log(values);
         return dispatch(addInventory(values));
     }
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;
-        const { token, user, isLoggingIn, loggingInError } = this.props.auth;
+        const { token, user, isLoggingIn, addingInventoryError } = this.props.inventory;
         let error = null;
-        if (loggingInError) {
+        if (addingInventoryError) {
             error = (
                 <Message negative>
-                    <Message.Header>Error while Login</Message.Header>
-                    <p>{loggingInError}</p>
+                    <Message.Header>Error while Adding Inventory</Message.Header>
+                    <p>{addingInventoryError}</p>
                 </Message>
             )
         }
@@ -93,7 +96,8 @@ class AddInventory extends Component {
 
 function mapStatesToProps(state) {
     return {
-        auth: state.auth
+        auth: state.auth,
+        inventory: state.inventory
     }
 }
 

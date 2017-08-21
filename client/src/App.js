@@ -30,7 +30,7 @@ render(
     <Provider store={store}>
         <ConnectedRouter history={history}>
             <div>
-                {/* <Route exact path="/" component={Home} /> */}
+                {/* <Route exact path="/" component={AddInventory} /> */}
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/inventory/add" component={AddInventory} />
             </div>
