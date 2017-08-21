@@ -90,7 +90,8 @@ export function loginUser(data, callback) {
             const userPayload = {
                 id: user.id,
                 name: user.name,
-                email: user.email
+                email: user.email,
+                roles: user.roles
             }
             jwtUtilClientSession.signPayload(payload, function (err, token) {
                 waterfallCallback(err, token, userPayload);

@@ -1,4 +1,4 @@
-import { USER_LOGIN_STARTED, USER_LOGIN_FULFILLED, USER_LOGIN_REJECTED } from "./../actions/AuthActions";
+import { USER_LOGIN_STARTED, USER_LOGIN_FULFILLED, USER_LOGIN_REJECTED, USER_LOGOUT_FULFILLED } from "./../actions/AuthActions";
 
 const initialState = {
     token: null,
@@ -22,6 +22,9 @@ export default function (state = initialState, action) {
         case USER_LOGIN_REJECTED: {
             const error = action.payload.data;
             return { ...state, isLoggingIn: false, loggingInError: error };
+        }
+        case USER_LOGOUT_FULFILLED: {
+            return { ...state, token: null, user: null };
         }
         default: {
             return state;
