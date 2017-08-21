@@ -36,28 +36,34 @@ class AddInventory extends Component {
                 </Table.Row>
             )
         });
+        let tableView = <h4>No Inventories Found. Please Add Some </h4>
+        if (inventories.length > 0) {
+            tableView = (
+                <Table celled>
+                    <Table.Header>
+                        <Table.Row>
+                            <Table.HeaderCell>Product ID</Table.HeaderCell>
+                            <Table.HeaderCell>Product Name</Table.HeaderCell>
+                            <Table.HeaderCell>Status</Table.HeaderCell>
+                            <Table.HeaderCell>MRP</Table.HeaderCell>
+                            <Table.HeaderCell>Quantity</Table.HeaderCell>
+                            <Table.HeaderCell>Batch Number</Table.HeaderCell>
+                            <Table.HeaderCell>Batch Date</Table.HeaderCell>
+                        </Table.Row>
+                    </Table.Header>
+                    <Table.Body>
+                        {inventoriesView}
+                    </Table.Body>
+                </Table>
+            )
+        }
         return (
             <BaseLayout>
                 <Segment textAlign='center' >
                     <Header as="h2">Inventory List</Header>
                     {error}
                     <Segment loading={isFetchingInventories}>
-                        <Table celled>
-                            <Table.Header>
-                                <Table.Row>
-                                    <Table.HeaderCell>Product ID</Table.HeaderCell>
-                                    <Table.HeaderCell>Product Name</Table.HeaderCell>
-                                    <Table.HeaderCell>Status</Table.HeaderCell>
-                                    <Table.HeaderCell>MRP</Table.HeaderCell>
-                                    <Table.HeaderCell>Quantity</Table.HeaderCell>
-                                    <Table.HeaderCell>Batch Number</Table.HeaderCell>
-                                    <Table.HeaderCell>Batch Date</Table.HeaderCell>
-                                </Table.Row>
-                            </Table.Header>
-                            <Table.Body>
-                                {inventoriesView}
-                            </Table.Body>
-                        </Table>
+                        {tableView}
                     </Segment>
                 </Segment>
             </BaseLayout>
