@@ -15,6 +15,7 @@ import reducers from './reducers';
 import Login from "./containers/login";
 import AddInventory from "./containers/addInventory";
 import ViewInventories from "./containers/viewInventories";
+import ApproveInventory from "./containers/approveInventory";
 
 const history = createHistory();
 const logger = createLogger();
@@ -56,6 +57,7 @@ class App extends Component {
                             {/* <Route exact path="/" component={AddInventory} /> */}
                             <Route exact path="/login" component={Login} />
                             <Route exact path="/inventory/add" component={AddInventory} />
+                            <Route exact path="/inventory/approve" component={ApproveInventory} />
                             <Route exact path="/inventory" component={ViewInventories} />
                         </div>
                     </ConnectedRouter>

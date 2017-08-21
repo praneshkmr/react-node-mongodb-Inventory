@@ -20,6 +20,13 @@ export function getInventories(callback) {
     });
 }
 
+export function getPendingInventories(callback) {
+    Inventory.find({ "isRemoved": false, "status": "pending" }, function (err, inventories) {
+        console.log(inventories);
+        callback(err, inventories)
+    });
+}
+
 export function updateInventoryById(id, data, callback) {
     data.lastModifiedAt = new Date();
     Inventory.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, inventory) {

@@ -12,6 +12,14 @@ export const DELETE_INVENTORY_STARTED = "DELETE_INVENTORY_STARTED";
 export const DELETE_INVENTORY_FULFILLED = "DELETE_INVENTORY_FULFILLED";
 export const DELETE_INVENTORY_REJECTED = "DELETE_INVENTORY_REJECTED";
 
+export const GET_PENDING_INVENTORIES_STARTED = "GET_PENDING_INVENTORIES_STARTED";
+export const GET_PENDING_INVENTORIES_FULFILLED = "GET_PENDING_INVENTORIES_FULFILLED";
+export const GET_PENDING_INVENTORIES_REJECTED = "GET_PENDING_INVENTORIES_REJECTED";
+
+export const APPROVE_INVENTORY_STARTED = "APPROVE_INVENTORY_STARTED";
+export const APPROVE_INVENTORY_FULFILLED = "APPROVE_INVENTORY_FULFILLED";
+export const APPROVE_INVENTORY_REJECTED = "APPROVE_INVENTORY_REJECTED";
+
 const WS_URL = "http://localhost:3000/inventories/";
 
 export function addInventory(data) {
@@ -47,6 +55,45 @@ export function getInventories(data) {
             .catch(function (error) {
                 const response = error.response;
                 dispatch({ type: GET_INVENTORIES_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
+export function getPendingInventories(data) {
+    return function (dispatch) {
+        dispatch({ type: GET_PENDING_INVENTORIES_STARTED });
+        return axios.get(WS_URL + "pending", { headers: { Authorization: data.token } })
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: GET_PENDING_INVENTORIES_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: GET_PENDING_INVENTORIES_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
+export function approveInventory(data) {
+    const inventory = data.inventory;
+    return function (dispatch) {
+        dispatch({ type: APPROVE_INVENTORY_STARTED });
+        return axios.get(WS_URL + inventory.id + "/approve", { headers: { Authorization: data.token } })
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: APPROVE_INVENTORY_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: APPROVE_INVENTORY_REJECTED, payload: response });
                 throw response;
             })
     }

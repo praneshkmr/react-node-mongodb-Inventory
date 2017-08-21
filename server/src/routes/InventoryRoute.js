@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createInventory, approveInventory, removeInventory, getInventories } from "./../services/InventoryService";
+import { createInventory, approveInventory, removeInventory, getInventories, getPendingInventories } from "./../services/InventoryService";
 import { validateCreateInventory } from "./../validators/InventoryValidator"
 import { verifyAuthMiddleware } from "./../utils/AuthUtil";
 
@@ -90,6 +90,19 @@ router.get('/:id/approve', verifyAuthMiddleware, function (req, res, next) {
 
 router.get('/', verifyAuthMiddleware, function (req, res, next) {
     getInventories(function (err, inventories) {
+        if (err) {
+            console.log(err);
+            res.status(500).send(err);
+
+        }
+        else {
+            res.status(200).send(inventories);
+        }
+    });
+});
+
+router.get('/pending', verifyAuthMiddleware, function (req, res, next) {
+    getPendingInventories(function (err, inventories) {
         if (err) {
             console.log(err);
             res.status(500).send(err);

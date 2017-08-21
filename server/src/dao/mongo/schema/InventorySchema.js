@@ -18,7 +18,7 @@ const InventorySchema = mongoose.Schema({
         _id: false,
         action: { type: String, required: true, enum: ["created", "updated", "approved", "removed"] },
         userId: { type: Number, required: true },
-        timestamp: { type: Date, default: new Date }
+        timestamp: { type: Date, required: true }
     }],
     isRemoved: { type: Boolean, required: true, default: false },
 

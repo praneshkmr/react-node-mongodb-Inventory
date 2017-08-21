@@ -4,7 +4,8 @@ import {
     createInventory as createInventoryDAO,
     getInventoryById as getInventoryByIdDAO,
     updateInventoryById as updateInventoryByIdDAO,
-    getInventories as getInventoriesDAO
+    getInventories as getInventoriesDAO,
+    getPendingInventories as getPendingInventoriesDAO
 } from "./../dao/mongo/impl/InventoryDAO";
 import { getNextInventoryId } from "./CounterService";
 
@@ -36,7 +37,8 @@ export function createInventory(data, callback) {
             data.id = counterDoc.counter;
             data.history = [{
                 action: "created",
-                userId: data.userSession.userId
+                userId: data.userSession.userId,
+                timestamp: new Date()
             }]
             createInventoryDAO(data, waterfallCallback);
         }
@@ -81,28 +83,29 @@ export function approveInventory(data, callback) {
         },
         function (inventory, waterfallCallback) {
             const latestHistory = getLatestHistory(inventory);
-            console.log(latestHistory);
-            if (latestHistory.type === "created") {
+            if (latestHistory.action === "created") {
                 const update = {
                     status: "approved",
                     $push: {
                         history: {
                             action: "approved",
-                            userId: data.userSession.userId
+                            userId: data.userSession.userId,
+                            timestamp: new Date()
                         }
                     }
                 }
                 const id = data.id;
                 updateInventoryByIdDAO(id, update, waterfallCallback);
             }
-            else if (latestHistory.type === "removed") {
+            else if (latestHistory.action === "removed") {
                 const update = {
                     status: "approved",
                     isRemoved: true,
                     $push: {
                         history: {
                             action: "approved",
-                            userId: data.userSession.userId
+                            userId: data.userSession.userId,
+                            timestamp: new Date()
                         }
                     }
                 }
@@ -119,16 +122,17 @@ export function approveInventory(data, callback) {
 
 function getLatestHistory(inventory) {
     let latestHistory = null
-    inventory.history.forEach(function (history) {
+    inventory.history.every(function (history) {
         if (latestHistory) {
-            if ((new Date(history.timestamp)).getTime() > (new Date(latestHistory.history)).getTime()) {
+            if ((new Date(history.timestamp)).getTime() > (new Date(latestHistory.timestamp)).getTime()) {
                 latestHistory = history;
             }
         }
         else {
             latestHistory = history;
         }
-    }, this);
+        return true;
+    });
     return latestHistory;
 }
 
@@ -172,7 +176,8 @@ export function removeInventory(data, callback) {
                     $push: {
                         history: {
                             action: "removed",
-                            userId: data.userSession.userId
+                            userId: data.userSession.userId,
+                            timestamp: new Date()
                         }
                     }
                 }
@@ -186,7 +191,8 @@ export function removeInventory(data, callback) {
                     $push: {
                         history: {
                             action: "removed",
-                            userId: data.userSession.userId
+                            userId: data.userSession.userId,
+                            timestamp: new Date()
                         }
                     }
                 }
@@ -199,4 +205,8 @@ export function removeInventory(data, callback) {
 
 export function getInventories(callback) {
     getInventoriesDAO(callback);
+}
+
+export function getPendingInventories(callback) {
+    getPendingInventoriesDAO(callback);
 }

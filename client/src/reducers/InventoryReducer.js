@@ -1,6 +1,7 @@
 import { ADD_INVENTORY_STARTED, ADD_INVENTORY_FULFILLED, ADD_INVENTORY_REJECTED } from "./../actions/InventoryActions";
 import { GET_INVENTORIES_STARTED, GET_INVENTORIES_FULFILLED, GET_INVENTORIES_REJECTED } from "./../actions/InventoryActions";
 import { DELETE_INVENTORY_STARTED, DELETE_INVENTORY_FULFILLED, DELETE_INVENTORY_REJECTED } from "./../actions/InventoryActions";
+import { GET_PENDING_INVENTORIES_STARTED, GET_PENDING_INVENTORIES_FULFILLED, GET_PENDING_INVENTORIES_REJECTED } from "./../actions/InventoryActions";
 
 const initialState = {
     inventories: [],
@@ -9,7 +10,10 @@ const initialState = {
     isFetchingInventories: false,
     fetchingInventoriesError: null,
     isDeletingInventory: false,
-    deletingsInventoriesError: null
+    deletingsInventoriesError: null,
+    pendingInventories: [],
+    isFetchingPendingInventories: false,
+    fetchingPendingInventoriesError: null,
 }
 
 export default function (state = initialState, action) {
@@ -47,6 +51,17 @@ export default function (state = initialState, action) {
         case DELETE_INVENTORY_REJECTED: {
             const error = action.payload.data;
             return { ...state, isDeletingInventory: false, deletingsInventoriesError: error };
+        }
+        case GET_PENDING_INVENTORIES_STARTED: {
+            return { ...state, isFetchingPendingInventories: true };
+        }
+        case GET_PENDING_INVENTORIES_FULFILLED: {
+            const data = action.payload;
+            return { ...state, isFetchingPendingInventories: false, pendingInventories: data };
+        }
+        case GET_PENDING_INVENTORIES_REJECTED: {
+            const error = action.payload.data;
+            return { ...state, isFetchingPendingInventories: false, fetchingPendingInventoriesError: error };
         }
         default: {
             return state;
