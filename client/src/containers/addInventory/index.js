@@ -47,8 +47,9 @@ class AddInventory extends Component {
     onSubmit(values, dispatch) {
         const { token } = this.props.auth;
         values.token = token;
-        console.log(values);
-        return dispatch(addInventory(values));
+        return dispatch(addInventory(values)).then(function (data) {
+            dispatch(push("/inventory"));
+        });
     }
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;
