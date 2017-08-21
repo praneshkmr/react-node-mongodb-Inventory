@@ -14,6 +14,12 @@ export function getInventoryById(id, callback) {
     });
 }
 
+export function getInventories(callback) {
+    Inventory.find({}, function (err, inventories) {
+        callback(err, inventories)
+    });
+}
+
 export function updateInventoryById(id, data, callback) {
     data.lastModifiedAt = new Date();
     Inventory.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, inventory) {

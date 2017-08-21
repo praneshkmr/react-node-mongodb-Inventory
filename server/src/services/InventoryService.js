@@ -3,7 +3,8 @@ import async from "async";
 import {
     createInventory as createInventoryDAO,
     getInventoryById as getInventoryByIdDAO,
-    updateInventoryById as updateInventoryByIdDAO
+    updateInventoryById as updateInventoryByIdDAO,
+    getInventories as getInventoriesDAO
 } from "./../dao/mongo/impl/InventoryDAO";
 import { getNextInventoryId } from "./CounterService";
 
@@ -194,4 +195,8 @@ export function removeInventory(data, callback) {
             }
         }
     ], callback);
+}
+
+export function getInventories(callback) {
+    getInventoriesDAO(callback);
 }

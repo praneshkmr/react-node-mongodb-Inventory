@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createInventory, approveInventory, removeInventory } from "./../services/InventoryService";
+import { createInventory, approveInventory, removeInventory, getInventories } from "./../services/InventoryService";
 import { validateCreateInventory } from "./../validators/InventoryValidator"
 import { verifyAuthMiddleware } from "./../utils/AuthUtil";
 
@@ -86,6 +86,19 @@ router.get('/:id/approve', verifyAuthMiddleware, function (req, res, next) {
     else {
         res.status(400).send("id param required");
     }
+});
+
+router.get('/', verifyAuthMiddleware, function (req, res, next) {
+    getInventories(function (err, inventories) {
+        if (err) {
+            console.log(err);
+            res.status(500).send(err);
+
+        }
+        else {
+            res.status(200).send(inventories);
+        }
+    });
 });
 
 export default router;

@@ -30,7 +30,7 @@ class Login extends Component {
     }
     onSubmit(values, dispatch) {
         return dispatch(loginUser(values)).then(function (data) {
-            dispatch(push("/inventory/add"));
+            dispatch(push("/inventory"));
         });
     }
     render() {
