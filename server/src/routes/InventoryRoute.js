@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createInventory } from "./../services/InventoryService";
+import { createInventory, approveInventory } from "./../services/InventoryService";
 import { validateCreateInventory } from "./../validators/InventoryValidator"
 import { verifyAuthMiddleware } from "./../utils/AuthUtil";
 
@@ -16,8 +16,13 @@ router.post('/', verifyAuthMiddleware, function (req, res, next) {
             const data = { productId, productName: { en: productName }, mrp, batch, quantity, userSession };
             createInventory(data, function (err, inventory) {
                 if (err) {
-                    console.log(err);
-                    res.status(500).send(err);
+                    if (err.message === "Not Enough Permission to create Inventory") {
+                        res.status(400).send(err.message);
+                    }
+                    else {
+                        console.log(err);
+                        res.status(500).send(err);
+                    }
                 }
                 else {
                     res.status(201).send(inventory);
@@ -25,6 +30,34 @@ router.post('/', verifyAuthMiddleware, function (req, res, next) {
             });
         }
     });
+});
+
+router.get('/:id/approve', verifyAuthMiddleware, function (req, res, next) {
+    const id = req.params.id;
+    if (id) {
+        const userSession = req.session;
+        const data = { id, userSession };
+        approveInventory(data, function (err, inventory) {
+            if (err) {
+                if (err.message === "Only Pending Inventories can be approved") {
+                    res.status(400).send(err.message);
+                }
+                else if (err.message === "Not Enough Permission to approve Inventory") {
+                    res.status(400).send(err.message);
+                }
+                else {
+                    console.log(err);
+                    res.status(500).send(err);
+                }
+            }
+            else {
+                res.status(200).send();
+            }
+        });
+    }
+    else {
+        res.status(400).send("id param required");
+    }
 });
 
 export default router;
