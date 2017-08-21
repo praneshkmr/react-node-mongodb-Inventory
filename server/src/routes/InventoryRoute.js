@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createInventory, approveInventory } from "./../services/InventoryService";
+import { createInventory, approveInventory, removeInventory } from "./../services/InventoryService";
 import { validateCreateInventory } from "./../validators/InventoryValidator"
 import { verifyAuthMiddleware } from "./../utils/AuthUtil";
 
@@ -30,6 +30,34 @@ router.post('/', verifyAuthMiddleware, function (req, res, next) {
             });
         }
     });
+});
+
+router.delete('/:id', verifyAuthMiddleware, function (req, res, next) {
+    const id = req.params.id;
+    if (id) {
+        const userSession = req.session;
+        const data = { id, userSession };
+        removeInventory(data, function (err, inventory) {
+            if (err) {
+                if (err.message === "Not Enough Permission to remove Inventory") {
+                    res.status(400).send(err.message);
+                }
+                else if (err.message === "An Operation is Pending on the Inventory") {
+                    res.status(400).send(err.message);
+                }
+                else {
+                    console.log(err);
+                    res.status(500).send(err);
+                }
+            }
+            else {
+                res.status(200).send();
+            }
+        });
+    }
+    else {
+        res.status(400).send("id param required");
+    }
 });
 
 router.get('/:id/approve', verifyAuthMiddleware, function (req, res, next) {
