@@ -84,7 +84,8 @@ export function loginUser(data, callback) {
         },
         function (user, waterfallCallback) {
             const payload = {
-                userId: user.id
+                userId: user.id,
+                roles: user.roles
             }
             const userPayload = {
                 id: user.id,
@@ -100,4 +101,8 @@ export function loginUser(data, callback) {
 
 export function getUserById(id, callback) {
     getUserByIdDAO(id, callback);
+}
+
+export function validateUserToken(token, callback) {
+    jwtUtilClientSession.verifyToken(token, callback);
 }
