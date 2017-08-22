@@ -2,6 +2,8 @@ import { ADD_INVENTORY_STARTED, ADD_INVENTORY_FULFILLED, ADD_INVENTORY_REJECTED 
 import { GET_INVENTORIES_STARTED, GET_INVENTORIES_FULFILLED, GET_INVENTORIES_REJECTED } from "./../actions/InventoryActions";
 import { DELETE_INVENTORY_STARTED, DELETE_INVENTORY_FULFILLED, DELETE_INVENTORY_REJECTED } from "./../actions/InventoryActions";
 import { GET_PENDING_INVENTORIES_STARTED, GET_PENDING_INVENTORIES_FULFILLED, GET_PENDING_INVENTORIES_REJECTED } from "./../actions/InventoryActions";
+import { UPDATE_INVENTORY_STARTED, UPDATE_INVENTORY_FULFILLED, UPDATE_INVENTORY_REJECTED } from "./../actions/InventoryActions";
+import { SET_UPDATING_INVENTORY_FULFILLED } from "./../actions/InventoryActions";
 
 const initialState = {
     inventories: [],
@@ -14,6 +16,9 @@ const initialState = {
     pendingInventories: [],
     isFetchingPendingInventories: false,
     fetchingPendingInventoriesError: null,
+    inventory: null,
+    isUpdatingInventory: false,
+    updatingInventoriesError: null,
 }
 
 export default function (state = initialState, action) {
@@ -62,6 +67,24 @@ export default function (state = initialState, action) {
         case GET_PENDING_INVENTORIES_REJECTED: {
             const error = action.payload.data;
             return { ...state, isFetchingPendingInventories: false, fetchingPendingInventoriesError: error };
+        }
+        case UPDATE_INVENTORY_STARTED: {
+            return { ...state, isUpdatingInventory: true };
+        }
+        case UPDATE_INVENTORY_FULFILLED: {
+            const data = action.payload;
+            return { ...state, isUpdatingInventory: false, inventory: null };
+        }
+        case UPDATE_INVENTORY_REJECTED: {
+            const error = action.payload.data;
+            return { ...state, isUpdatingInventory: false, updatingInventoriesError: error };
+        }
+        case SET_UPDATING_INVENTORY_FULFILLED: {
+            const id = action.payload;
+            const inv = state.inventories.filter(function (element) {
+                return element.id == id;
+            })[0];
+            return Object.assign({}, state, { inventory: inv });
         }
         default: {
             return state;

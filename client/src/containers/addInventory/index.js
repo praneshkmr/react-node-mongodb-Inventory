@@ -6,26 +6,26 @@ import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
-import { addInventory } from "./../../actions/InventoryActions";
+import { addInventory, setUpdatingInventory, updateInventory } from "./../../actions/InventoryActions";
 
 function validate(values) {
     var errors = {
         batch: {}
     };
     const { productId, productName, mrp, batch, quantity } = values;
-    if (!productId || productId.trim() === "") {
+    if (!productId || (productId + "").trim() === "") {
         errors.productId = "ProductId is Required";
     }
     if (!productName || productName.trim() === "") {
         errors.productName = "ProductName is Required";
     }
-    if (!mrp || mrp.trim() === "") {
+    if (!mrp || (mrp + "").trim() === "") {
         errors.mrp = "MRP is Required";
     }
-    if (!quantity || quantity.trim() === "") {
+    if (!quantity || (quantity + "").trim() === "") {
         errors.quantity = "Quantity is Required";
     }
-    if (!(batch && batch.number) || batch.number.trim() === "") {
+    if (!(batch && batch.number) || (batch.number + "").trim() === "") {
         errors.batch.number = "Batch Name is Required";
     }
     if (!(batch && batch.date) || batch.date.trim() === "") {
@@ -35,6 +35,13 @@ function validate(values) {
 }
 
 class AddInventory extends Component {
+    componentWillMount() {
+        const idParam = this.props.location.pathname.split("/")[2]; // Hacky Way
+        const { dispatch } = this.props;
+        if (idParam !== "add") {
+            dispatch(setUpdatingInventory(idParam));
+        }
+    }
     renderField({ input, meta: { touched, error }, ...custom }) {
         const hasError = touched && error !== undefined;
         return (
@@ -47,13 +54,21 @@ class AddInventory extends Component {
     onSubmit(values, dispatch) {
         const { token } = this.props.auth;
         values.token = token;
-        return dispatch(addInventory(values)).then(function (data) {
-            dispatch(push("/inventory"));
-        });
+        console.log(values);
+        if (values.id) {
+            return dispatch(updateInventory(values)).then(function (data) {
+                dispatch(push("/inventory"));
+            });
+        }
+        else {
+            return dispatch(addInventory(values)).then(function (data) {
+                dispatch(push("/inventory"));
+            });
+        }
     }
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;
-        const { token, user, isLoggingIn, addingInventoryError } = this.props.inventory;
+        const { token, user, isLoggingIn, addingInventoryError, inventory } = this.props.inventory;
         let error = null;
         if (addingInventoryError) {
             error = (
@@ -62,6 +77,13 @@ class AddInventory extends Component {
                     <p>{addingInventoryError}</p>
                 </Message>
             )
+        }
+        let buttonText = null;
+        if (inventory) {
+            buttonText = "Update Inventory";
+        }
+        else {
+            buttonText = "Add Inventory";
         }
         return (
             <BaseLayout>
@@ -87,7 +109,7 @@ class AddInventory extends Component {
                         <Form.Field inline>
                             <Field name="quantity" placeholder="Enter the Quantity" component={this.renderField}></Field>
                         </Form.Field>
-                        <Button loading={submitting} disabled={submitting}>Add Inventory</Button>
+                        <Button loading={submitting} disabled={submitting}>{buttonText}</Button>
                     </Form>
                 </Segment>
             </BaseLayout>
@@ -96,13 +118,19 @@ class AddInventory extends Component {
 }
 
 function mapStatesToProps(state) {
+    const initialValues = state.inventory.inventory;
+    if (initialValues && initialValues.productName && initialValues.productName.en) {
+        initialValues.productName = initialValues.productName.en;
+    }
     return {
+        initialValues: initialValues,
         auth: state.auth,
-        inventory: state.inventory
+        inventory: state.inventory,
+        location: state.router.location
     }
 }
 
-export default reduxForm({
+export default connect(mapStatesToProps)(reduxForm({
     form: "AddInventory",
     validate
-})(connect(mapStatesToProps)(AddInventory));
+})(AddInventory));

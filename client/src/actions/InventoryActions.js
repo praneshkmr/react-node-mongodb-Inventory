@@ -20,6 +20,12 @@ export const APPROVE_INVENTORY_STARTED = "APPROVE_INVENTORY_STARTED";
 export const APPROVE_INVENTORY_FULFILLED = "APPROVE_INVENTORY_FULFILLED";
 export const APPROVE_INVENTORY_REJECTED = "APPROVE_INVENTORY_REJECTED";
 
+export const UPDATE_INVENTORY_STARTED = "UPDATE_INVENTORY_STARTED";
+export const UPDATE_INVENTORY_FULFILLED = "UPDATE_INVENTORY_FULFILLED";
+export const UPDATE_INVENTORY_REJECTED = "UPDATE_INVENTORY_REJECTED";
+
+export const SET_UPDATING_INVENTORY_FULFILLED = "SET_UPDATING_INVENTORY_FULFILLED";
+
 const WS_URL = "http://localhost:3000/inventories/";
 
 export function addInventory(data) {
@@ -114,6 +120,31 @@ export function deleteInventory(data) {
             .catch(function (error) {
                 const response = error.response;
                 dispatch({ type: DELETE_INVENTORY_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
+export function setUpdatingInventory(id) {
+    return function (dispatch) {
+        dispatch({ type: SET_UPDATING_INVENTORY_FULFILLED, payload: id });
+    }
+}
+
+export function updateInventory(inventory) {
+    return function (dispatch) {
+        dispatch({ type: UPDATE_INVENTORY_STARTED });
+        return axios.put(WS_URL + inventory.id, inventory)
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: UPDATE_INVENTORY_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: UPDATE_INVENTORY_REJECTED, payload: response });
                 throw response;
             })
     }

@@ -58,6 +58,7 @@ class App extends Component {
                             <Route exact path="/login" component={Login} />
                             <Route exact path="/inventory/add" component={AddInventory} />
                             <Route exact path="/inventory/approve" component={ApproveInventory} />
+                            <Route path="/inventory/:id" component={AddInventory} />
                             <Route exact path="/inventory" component={ViewInventories} />
                         </div>
                     </ConnectedRouter>

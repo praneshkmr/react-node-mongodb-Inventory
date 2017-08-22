@@ -12,6 +12,10 @@ class AddInventory extends Component {
         const { token, dispatch } = this.props;
         dispatch(getInventories({ token: token }));
     }
+    onPressEdit(inventory) {
+        const { dispatch } = this.props;
+        dispatch(push("/inventory/" + inventory.id));
+    }
     onPressDelete(inventory) {
         const { token, dispatch } = this.props;
         dispatch(deleteInventory({ token: token, inventory: inventory })).then(function (data) {
@@ -40,7 +44,10 @@ class AddInventory extends Component {
                     <Table.Cell >{inventory.quantity}</Table.Cell>
                     <Table.Cell >{inventory.batch.number}</Table.Cell>
                     <Table.Cell >{inventory.batch.date}</Table.Cell>
-                    <Table.Cell ><Icon name='trash outline' size='large' onClick={this.onPressDelete.bind(this, inventory)} /></Table.Cell>
+                    <Table.Cell >
+                        <Icon name='trash outline' size='large' onClick={this.onPressDelete.bind(this, inventory)} />
+                        <Icon name='pencil' size='large' onClick={this.onPressEdit.bind(this, inventory)} />
+                    </Table.Cell>
                 </Table.Row>
             )
         }, this);
@@ -50,11 +57,11 @@ class AddInventory extends Component {
                 <Table celled fixed>
                     <Table.Header>
                         <Table.Row>
-                            <Table.HeaderCell>Product ID</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Product ID</Table.HeaderCell>
                             <Table.HeaderCell>Product Name</Table.HeaderCell>
-                            <Table.HeaderCell>Status</Table.HeaderCell>
-                            <Table.HeaderCell>MRP</Table.HeaderCell>
-                            <Table.HeaderCell>Quantity</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Status</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>MRP</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Quantity</Table.HeaderCell>
                             <Table.HeaderCell>Batch Number</Table.HeaderCell>
                             <Table.HeaderCell>Batch Date</Table.HeaderCell>
                             <Table.HeaderCell>Options</Table.HeaderCell>
