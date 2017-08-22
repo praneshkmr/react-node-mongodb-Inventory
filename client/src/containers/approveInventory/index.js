@@ -32,11 +32,26 @@ class ApproveInventory extends Component {
         }
         const inventoriesView = pendingInventories.map(function (inventory) {
             const latestHistory = getLatestHistory(inventory);
+            let operationText = null;
+            switch (latestHistory.action) {
+                case "created": {
+                    operationText = "Creation";
+                    break;
+                }
+                case "updated": {
+                    operationText = "Updation";
+                    break;
+                }
+                case "removed": {
+                    operationText = "Removal";
+                    break;
+                }
+            }
             return (
                 <Table.Row key={inventory.id}>
                     <Table.Cell>{inventory.productId}</Table.Cell>
                     <Table.Cell>{inventory.productName.en}</Table.Cell>
-                    <Table.Cell>{latestHistory.action}</Table.Cell>
+                    <Table.Cell>{operationText}</Table.Cell>
                     <Table.Cell>{inventory.status}</Table.Cell>
                     <Table.Cell ><Icon name='checkmark' size='large' onClick={this.onPressApprove.bind(this, inventory)} /></Table.Cell>
                 </Table.Row>
