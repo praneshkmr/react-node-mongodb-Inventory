@@ -45,6 +45,94 @@ export function createInventory(data, callback) {
     ], callback);
 }
 
+export function updateInventory(data, callback) {
+    async.waterfall([
+        function (waterfallCallback) {
+            const { roles } = data.userSession;
+            const { isStoreManager, isDepartmentManager } = getUserRoles(roles);
+            if (isDepartmentManager || isStoreManager) {
+                waterfallCallback();
+            }
+            else {
+                const err = new Error("Not Enough Permission to update Inventory");
+                waterfallCallback(err);
+            }
+        },
+        function (waterfallCallback) {
+            const id = data.id;
+            getInventoryByIdDAO(id, function (err, inventory) {
+                if (err) {
+                    waterfallCallback(err);
+                }
+                else if (inventory) {
+                    if (inventory.status == "approved") {
+                        waterfallCallback(null, inventory);
+                    }
+                    else {
+                        const err = new Error("An Operation is Pending on the Inventory");
+                        waterfallCallback(err);
+                    }
+                }
+                else {
+                    const err = new Error("Inventory Not Found");
+                    waterfallCallback(err);
+                }
+            });
+        },
+        function (inventory, waterfallCallback) {
+            const { roles } = data.userSession;
+            const { isStoreManager, isDepartmentManager } = getUserRoles(roles);
+            if (isStoreManager) {
+                const update = {
+                    status: "approved",
+                    productId: data.productId,
+                    productName: data.productName,
+                    mrp: data.mrp,
+                    batch: data.batch,
+                    quantity: data.quantity,
+                    $push: {
+                        history: {
+                            action: "updated",
+                            userId: data.userSession.userId,
+                            timestamp: new Date(),
+                            payload: {
+                                productId: data.productId,
+                                productName: data.productName,
+                                mrp: data.mrp,
+                                batch: data.batch,
+                                quantity: data.quantity,
+                            }
+                        }
+                    }
+                }
+                const id = data.id;
+                updateInventoryByIdDAO(id, update, waterfallCallback);
+            }
+            else if (isDepartmentManager) {
+                const update = {
+                    status: "pending",
+                    $push: {
+                        history: {
+                            action: "updated",
+                            userId: data.userSession.userId,
+                            timestamp: new Date(),
+                            payload: {
+                                productId: data.productId,
+                                productName: data.productName,
+                                mrp: data.mrp,
+                                batch: data.batch,
+                                quantity: data.quantity,
+                            }
+                        }
+                    }
+                }
+                const id = data.id;
+                updateInventoryByIdDAO(id, update, waterfallCallback);
+            }
+        }
+    ], callback);
+}
+
 function getUserRoles(roles) {
     const isStoreManager = roles.indexOf("storeManager") >= 0;
     const isDepartmentManager = roles.indexOf("deliveryManager") >= 0;
@@ -112,6 +200,26 @@ export function approveInventory(data, callback) {
                 const id = data.id;
                 updateInventoryByIdDAO(id, update, waterfallCallback);
             }
+            else if (latestHistory.action === "updated") {
+                const payload = latestHistory.payload;
+                const update = {
+                    status: "approved",
+                    productId: payload.productId,
+                    productName: payload.productName,
+                    mrp: payload.mrp,
+                    batch: payload.batch,
+                    quantity: payload.quantity,
+                    $push: {
+                        history: {
+                            action: "approved",
+                            userId: data.userSession.userId,
+                            timestamp: new Date()
+                        }
+                    }
+                }
+                const id = data.id;
+                updateInventoryByIdDAO(id, update, waterfallCallback);
+            }
             else {
                 const err = new Error("Weird Flow in Inventory Approval");
                 waterfallCallback(err);
@@ -155,7 +263,7 @@ export function removeInventory(data, callback) {
                 if (err) {
                     waterfallCallback(err);
                 }
-                else {
+                else if (inventory) {
                     if (inventory.status == "approved") {
                         waterfallCallback(null, inventory);
                     }
@@ -163,6 +271,10 @@ export function removeInventory(data, callback) {
                         const err = new Error("An Operation is Pending on the Inventory");
                         waterfallCallback(err);
                     }
+                }
+                else {
+                    const err = new Error("Inventory Not Found");
+                    waterfallCallback(err);
                 }
             });
         },
