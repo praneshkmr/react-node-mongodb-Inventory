@@ -31,10 +31,12 @@ class ApproveInventory extends Component {
             )
         }
         const inventoriesView = pendingInventories.map(function (inventory) {
+            const latestHistory = getLatestHistory(inventory);
             return (
                 <Table.Row key={inventory.id}>
                     <Table.Cell>{inventory.productId}</Table.Cell>
                     <Table.Cell>{inventory.productName.en}</Table.Cell>
+                    <Table.Cell>{latestHistory.action}</Table.Cell>
                     <Table.Cell>{inventory.status}</Table.Cell>
                     <Table.Cell ><Icon name='checkmark' size='large' onClick={this.onPressApprove.bind(this, inventory)} /></Table.Cell>
                 </Table.Row>
@@ -48,6 +50,7 @@ class ApproveInventory extends Component {
                         <Table.Row>
                             <Table.HeaderCell>Product ID</Table.HeaderCell>
                             <Table.HeaderCell>Product Name</Table.HeaderCell>
+                            <Table.HeaderCell>Operation</Table.HeaderCell>
                             <Table.HeaderCell>Status</Table.HeaderCell>
                             <Table.HeaderCell>Options</Table.HeaderCell>
                         </Table.Row>
@@ -70,6 +73,22 @@ class ApproveInventory extends Component {
             </BaseLayout>
         )
     }
+}
+
+function getLatestHistory(inventory) {
+    let latestHistory = null
+    inventory.history.every(function (history) {
+        if (latestHistory) {
+            if ((new Date(history.timestamp)).getTime() > (new Date(latestHistory.timestamp)).getTime()) {
+                latestHistory = history;
+            }
+        }
+        else {
+            latestHistory = history;
+        }
+        return true;
+    });
+    return latestHistory;
 }
 
 function mapStatesToProps(state) {
