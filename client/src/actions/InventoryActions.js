@@ -89,7 +89,7 @@ export function approveInventory(data) {
     const inventory = data.inventory;
     return function (dispatch) {
         dispatch({ type: APPROVE_INVENTORY_STARTED });
-        return axios.get(WS_URL + inventory.id + "/approve", { headers: { Authorization: data.token } })
+        return axios.put(WS_URL + inventory.id + "/approve", null, { headers: { Authorization: data.token } })
             .then(function (response) {
                 return response.data;
             })

@@ -99,7 +99,7 @@ router.delete('/:id', verifyAuthMiddleware, function (req, res, next) {
     }
 });
 
-router.get('/:id/approve', verifyAuthMiddleware, function (req, res, next) {
+router.put('/:id/approve', verifyAuthMiddleware, function (req, res, next) {
     const id = req.params.id;
     if (id) {
         const userSession = req.session;
